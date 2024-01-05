@@ -39,6 +39,7 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import java.io.File
 import java.io.FileOutputStream
 
 class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBinding::inflate){
@@ -51,6 +52,7 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
     private var fileChooserCallback: ValueCallback<Array<Uri>>? = null
     private var resultLauncher: ActivityResultLauncher<Intent>
     private var permissionsDeniedPermanently = false
+    private lateinit var imageFile : File
 
     init {
         resultLauncher =
@@ -60,6 +62,7 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
     }
 
     override fun initUserInterface(view: View?) {
+        imageFile = FileUtils.getTakePhotoFile(requireActivity())
         setupWebView()
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
@@ -223,8 +226,9 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
             if (fileChooserCallback != null) {
                 val result = if (data == null || data.data == null) {
                     val imageBitmap = data?.extras?.get("data") as Bitmap
-                    val uri = saveImageAndGetUri(imageBitmap)
-                    arrayOf(uri)
+                   // val uri = saveImageAndGetUri(imageBitmap)
+                   // arrayOf(uri)
+                    arrayOf(Uri.fromFile(imageFile))
                 } else {
                     // Gallery result
                     arrayOf(data.data!!)
@@ -291,6 +295,8 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
 
             val chooserIntent = Intent.createChooser(galleryIntent, "Choose Image Source")
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageFile)
             resultLauncher.launch(chooserIntent)
 
         } else if (isAnyPermissionPermanentlyDenied) {
@@ -321,7 +327,7 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
     }
 
     private fun saveImageAndGetUri(bitmap: Bitmap): Uri {
-        val imageFile = FileUtils.getTakePhotoFile(requireActivity())
+       val imageFile= FileUtils.getTakePhotoFile(requireActivity())
         val fileOutputStream = FileOutputStream(imageFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
         fileOutputStream.flush()
