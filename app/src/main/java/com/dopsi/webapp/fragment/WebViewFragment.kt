@@ -327,7 +327,7 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
     }
 
     private fun saveImageAndGetUri(bitmap: Bitmap): Uri {
-       val imageFile= FileUtils.getTakePhotoFile(requireActivity())
+       val imageFile = FileUtils.getTakePhotoFile(requireActivity())
         val fileOutputStream = FileOutputStream(imageFile)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
         fileOutputStream.flush()
