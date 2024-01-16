@@ -2,18 +2,19 @@ package com.dopsi.webapp.fragment
 
 import android.Manifest
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
-import android.view.KeyEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.Transformation
@@ -28,11 +29,13 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.navigation.Navigation
+import androidx.core.content.FileProvider
 import com.core.base.BaseFragment
 import com.core.utils.PermissionUtilsNew
 import com.core.utils.Utils
+import com.core.utils.Utils.compressImage
 import com.core.utils.fileUtils.FileUtils
+import com.dopsi.webapp.BuildConfig
 import com.dopsi.webapp.databinding.FragmentWebViewBinding
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
@@ -41,6 +44,8 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Objects
+
 
 class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBinding::inflate){
 
@@ -53,7 +58,7 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
     private var resultLauncher: ActivityResultLauncher<Intent>
     private var permissionsDeniedPermanently = false
     private lateinit var imageFile : File
-
+    private lateinit var imageURI : Uri
     init {
         resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -221,17 +226,17 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
         }
     }
 
+    @SuppressLint("Range")
     private fun onActivityResult(resultCode: Int, data: Intent?) {
         if (resultCode == RESULT_OK) {
             if (fileChooserCallback != null) {
                 val result = if (data == null || data.data == null) {
-                    val imageBitmap = data?.extras?.get("data") as Bitmap
-                   // val uri = saveImageAndGetUri(imageBitmap)
-                   // arrayOf(uri)
+                    val useBitmap = BitmapFactory.decodeFile(imageFile.path)
+                  // val compressedFile =  compressImage(imageFile.path)
+                   // arrayOf(Uri.fromFile(compressedFile))
                     arrayOf(Uri.fromFile(imageFile))
                 } else {
-                    // Gallery result
-                    arrayOf(data.data!!)
+                  arrayOf(data.data!!)
                 }
                 fileChooserCallback!!.onReceiveValue(result)
                 fileChooserCallback = null
@@ -295,8 +300,8 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
 
             val chooserIntent = Intent.createChooser(galleryIntent, "Choose Image Source")
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
-            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
-            chooserIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageFile)
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile))
+
             resultLauncher.launch(chooserIntent)
 
         } else if (isAnyPermissionPermanentlyDenied) {
@@ -334,4 +339,8 @@ class WebViewFragment :BaseFragment<FragmentWebViewBinding>(FragmentWebViewBindi
         fileOutputStream.close()
         return Uri.fromFile(imageFile)
     }
+
+
+
+
 }
