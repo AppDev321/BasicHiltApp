@@ -6,7 +6,8 @@ import android.content.Intent
 import android.os.PowerManager
 import android.util.Log
 import com.core.BaseApplication
-
+import com.core.extensions.TAG
+import com.core.utils.AppLogger
 
 
 class ConnectionReceiver : BroadcastReceiver() {
@@ -15,6 +16,7 @@ class ConnectionReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
+
         val action = intent.action
         if (action != null) {
             when (action) {
@@ -33,10 +35,12 @@ class ConnectionReceiver : BroadcastReceiver() {
                 }
             }
         }
+
     }
 
     private fun tryToStartXmppService() {
-        Log.e("Receiver", "tryToStartXmppService")
-      //  BaseApplication.instance.enqueueOnetimeConnectionWorker()
+        AppLogger.e(
+            TAG, "tryToStartXmppService")
+       BaseApplication.instance.enqueueOnetimeConnectionWorker()
     }
 }
