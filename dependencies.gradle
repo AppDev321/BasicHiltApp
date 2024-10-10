@@ -1,0 +1,71 @@
+// Define app configurations
+ext.app = [
+        minSdk     : 23,
+        targetSdk  : 34,
+        compileSdk : 34,
+        versionCode: 1,
+        versionName: '1.0'
+]
+
+ext.packageId = [
+        app: 'com.dopsi.webapp',
+]
+
+// Method to add dependencies
+static def addDependency(config, dependency) {
+    [configuration: config, depedency: dependency]
+}
+
+ext.addDependencies = {
+    DependencyHandler handler, dependencies ->
+        dependencies.each {
+            handler.add(it.configuration, it.depedency) {
+                if (it.group == 'com.squareup.retrofit2') {
+                    if (it.name == 'retrofit' || it.name == 'converter-gson') {
+                        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+                    }
+                } else if (it.group == 'com.giphy.sdk') {
+                    if (it.name == 'ui') {
+                        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+                    }
+                } else if (it.group == 'io.socket') {
+                    if (it.name == 'socket.io-client') {
+                        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+                    }
+                }
+            }
+        }
+}
+
+// List of app dependencies using version catalog
+ext.appLevelDependencies = [
+        addDependency("implementation", libs.hilt.android),
+        addDependency("implementation", libs.androidx.ktx),
+        addDependency("implementation", libs.androidx.appcompat),
+        addDependency("implementation", libs.material),
+        addDependency("implementation", libs.recyclerview),
+        addDependency("implementation", libs.navigation.fragment),
+        addDependency("implementation", libs.navigation.ui),
+        addDependency("implementation", libs.hilt.work),
+        addDependency("kapt", libs.hilt.android.compiler),
+        addDependency("implementation", libs.lifecycle.viewmodel.ktx),
+        addDependency("implementation", libs.coroutines.core),
+        addDependency("implementation", libs.coroutines.android),
+        addDependency("implementation", libs.lifecycle.runtime.ktx),
+        addDependency("implementation", libs.activity.ktx),
+        addDependency("implementation", libs.retrofit),
+        addDependency("implementation", libs.converter.gson),
+        addDependency("implementation", libs.converter.scalars),
+        addDependency("implementation", libs.logging.interceptor),
+        addDependency("implementation", libs.okhttp),
+        addDependency("implementation", libs.timber),
+        addDependency("implementation", libs.commons.io),
+        addDependency("implementation", libs.dexter),
+        addDependency("implementation", libs.work.runtime.ktx),
+        addDependency("implementation", libs.startup.runtime),
+        addDependency("implementation", libs.lifecycle.service),
+        addDependency("implementation", libs.lifecycle.process)
+
+]
+
+

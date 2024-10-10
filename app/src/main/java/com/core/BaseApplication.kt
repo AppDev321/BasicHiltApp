@@ -22,11 +22,12 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
 @HiltAndroidApp
-class BaseApplication: Application() /*, androidx.lifecycle.DefaultLifecycleObserver */{
+class BaseApplication: Application() , androidx.lifecycle.DefaultLifecycleObserver {
     companion object {
         lateinit var instance: BaseApplication
     }
@@ -36,32 +37,30 @@ class BaseApplication: Application() /*, androidx.lifecycle.DefaultLifecycleObse
         super<Application>.onCreate()
 
         instance = this
-        AppLogger.initializeLogging(
+        AppLogger.initializeLogging(/**/
             this, FileUtils.getLogsPath(),
             preferenceManager.isApplicationLogsEnabled()
         )
 
-      /*  ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         CoroutineScope(Dispatchers.IO).launch {
             AppInitializer.getInstance(this@BaseApplication).apply {
                 initializeComponent(FirebaseStartup::class.java)
             }
         }
-       startService()*/
+       startService()
 
 
     }
 
-/*
     private fun startService() {
+
         val intent = Intent(this, BackgroundService::class.java)
         try {
             startService(intent)
         } catch (e: IllegalStateException) {
-            Log.e(
-                javaClass.simpleName,
-                "unable to start service from " + javaClass.simpleName
-            )
+            Timber.tag(javaClass.simpleName)
+                .e("unable to start service from %s", javaClass.simpleName)
         }
     }
 
@@ -83,6 +82,6 @@ class BaseApplication: Application() /*, androidx.lifecycle.DefaultLifecycleObse
         super.onStop(owner)
         startService()
         AppLogger.e(TAG, "************* backgrounded")
-    }*/
+    }
 
 }

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.LifecycleService
+import com.core.utils.AppLogger
 
 class BackgroundService: LifecycleService() {
 
@@ -17,6 +18,7 @@ class BackgroundService: LifecycleService() {
     }
 
     private fun schedulePostConnectivityChange() {
+
         val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val triggerAtMillis: Long =
             SystemClock.elapsedRealtime() + 1 * 1000
@@ -31,7 +33,7 @@ class BackgroundService: LifecycleService() {
                 pendingIntent
             )
         } catch (e: RuntimeException) {
-           Log.e(
+           AppLogger.e(
                 "BackgroundService",
                 "unable to schedule alarm for post connectivity change",
                 e

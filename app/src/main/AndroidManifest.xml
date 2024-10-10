@@ -31,7 +31,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.DopsiWebApp"
-        tools:targetApi="31" >
+        >
 
         <activity android:name=".activity.SplashActivity"
             android:exported="true">
@@ -45,11 +45,30 @@
         <activity android:name=".activity.MainActivity"/>
 
 
-
-        <!--<service
-            android:name=".service.BackgroundService"
+        <service
+            android:name="com.core.service.BackgroundService"
             android:exported="false"
             android:stopWithTask="true" />
+
+        <receiver
+            android:name="com.core.service.ConnectionReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.REBOOT" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+        <!--
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
